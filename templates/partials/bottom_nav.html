@@ -1,0 +1,14 @@
+<nav class="fixed bottom-0 inset-x-0 bg-white border-t md:hidden">
+  <div class="flex justify-around py-2">
+
+    <a href="{% url 'tweet:feed' %}">🏠</a>
+    <a href="{% url 'tweet:create' %}">➕</a>
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:profile' user.username %}">👤</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}">🔐</a>
+    {% endif %}
+
+  </div>
+</nav>
