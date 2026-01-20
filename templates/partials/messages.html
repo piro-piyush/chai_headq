@@ -1,0 +1,39 @@
+{% if messages %}
+  <div class="space-y-3 mb-4">
+    {% for message in messages %}
+      <div
+        class="
+          flex items-start gap-3 rounded-lg px-4 py-3 text-sm
+          {% if message.tags == 'success' %}
+            bg-green-50 text-green-700 border border-green-200
+          {% elif message.tags == 'error' %}
+            bg-red-50 text-red-700 border border-red-200
+          {% elif message.tags == 'warning' %}
+            bg-yellow-50 text-yellow-700 border border-yellow-200
+          {% else %}
+            bg-blue-50 text-blue-700 border border-blue-200
+          {% endif %}
+        "
+        role="alert"
+      >
+        <!-- Icon -->
+        <span class="mt-0.5">
+          {% if message.tags == 'success' %}
+            ✅
+          {% elif message.tags == 'error' %}
+            ❌
+          {% elif message.tags == 'warning' %}
+            ⚠️
+          {% else %}
+            ℹ️
+          {% endif %}
+        </span>
+
+        <!-- Message text -->
+        <p class="flex-1 leading-relaxed">
+          {{ message }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

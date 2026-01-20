@@ -1,0 +1,41 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Chai HeadQ{% endblock %}</title>
+  {% tailwind_css %}
+</head>
+
+<body class="min-h-screen bg-gray-900 text-gray-100 antialiased">
+
+  <!-- Top Navbar -->
+  <header class="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
+    {% include "partials/nav_bar.html" %}
+  </header>
+
+  <!-- Page Layout -->
+  <div class="flex justify-center">
+
+    <!-- Left Sidebar (hidden on mobile) -->
+    <aside class="hidden lg:block w-64"></aside>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-2xl px-4 py-6 mb-24">
+      {% include "partials/messages.html" %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Right Sidebar / Trends -->
+    <aside class="hidden xl:block w-80"></aside>
+
+  </div>
+
+  <!-- Bottom Navigation (Mobile) -->
+  <footer class="fixed bottom-0 inset-x-0 z-50 bg-gray-800 border-t border-gray-700 md:hidden">
+    {% include "partials/bottom_nav.html" %}
+  </footer>
+
+</body>
+</html>
