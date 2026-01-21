@@ -1,0 +1,132 @@
+{% extends "layout/layout.html" %}
+{% load tailwind_tags %}
+
+{% block title %}{% if tweet %}Edit Chai{% else %}Post a Chai{% endif %} - Chai HeadQ{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center px-4 min-h-[calc(100vh-64px)]">
+
+  <!-- Back Button -->
+  <div class="w-full max-w-md mb-4">
+    {% include "components/back_button.html" %}
+  </div>
+
+  <!-- Post Card -->
+  <div class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 w-full max-w-md transition hover:shadow-2xl">
+    
+    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center">
+      {% if tweet %}Edit Chai{% else %}Post a Chai{% endif %}
+    </h2>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 p-3 rounded-lg 
+            {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" 
+          action="{% if tweet %}{% url 'tweet:edit' tweet.id %}{% else %}{% url 'tweet:create' %}{% endif %}" 
+          enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+
+      <!-- Tweet Textarea -->
+      <div class="relative">
+        <label for="text" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          What's brewing?
+        </label>
+        <textarea name="text" id="text" rows="4"
+                  placeholder="Share your thoughts or a photo of your chai..."
+                  class="mt-1 block w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-yellow-400 focus:border-yellow-400 p-4 resize-none transition shadow-sm hover:shadow-md"
+                  maxlength="240" required>{% if tweet %}{{ tweet.text }}{% else %}{{ request.POST.text }}{% endif %}</textarea>
+        <p class="absolute bottom-1 right-2 text-xs text-gray-400 dark:text-gray-300">
+          <span id="charCount">0</span>/240
+        </p>
+      </div>
+
+      <!-- Image Upload with Preview + Remove -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+          Add a photo (optional)
+        </label>
+
+        <!-- Custom Choose Button -->
+        <label for="photoInput"
+               class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+          <!-- Camera Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h4l2-3h6l2 3h4v12H3V7z" />
+            <circle cx="12" cy="13" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          Choose Photo
+        </label>
+
+        <input type="file" name="photo" id="photoInput" accept="image/*" class="hidden">
+
+        <!-- Preview + Delete -->
+       <div id="previewContainer" class="mt-4 relative {% if tweet and tweet.photo %}block{% else %}hidden{% endif %}">
+  <img id="preview" class="rounded-xl w-full" 
+       src="{% if tweet and tweet.photo %}{{ tweet.photo.url }}{% endif %}" 
+       alt="Preview">
+  
+  {% if not tweet %}
+  <!-- Only show remove button when creating a new tweet -->
+  <button type="button" id="removeImage"
+          class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+  {% endif %}
+</div>
+
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" 
+              class="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-3 px-4 rounded-2xl transition shadow hover:shadow-lg">
+        {% if tweet %}Update Chai{% else %}Post Chai{% endif %}
+      </button>
+    </form>
+
+  </div>
+</div>
+
+<!-- JS for Character Count + Image Preview/Remove -->
+<script>
+  const textArea = document.getElementById('text');
+  const charCount = document.getElementById('charCount');
+  textArea.addEventListener('input', () => {
+      charCount.textContent = textArea.value.length;
+  });
+
+  const photoInput = document.getElementById('photoInput');
+  const previewContainer = document.getElementById('previewContainer');
+  const preview = document.getElementById('preview');
+  const removeBtn = document.getElementById('removeImage');
+
+  photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if(file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              preview.src = e.target.result;
+              previewContainer.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+      }
+  });
+
+  removeBtn.addEventListener('click', () => {
+      photoInput.value = '';
+      preview.src = '';
+      previewContainer.classList.add('hidden');
+  });
+
+  // Initialize character count on load
+  charCount.textContent = textArea.value.length;
+</script>
+{% endblock %}
