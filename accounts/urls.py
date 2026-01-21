@@ -4,11 +4,16 @@ from . import views
 app_name = "accounts"
 
 urlpatterns = [
-    # path("", views.feed, name="feed"),
-    path("register/", views.register, name="register"),    # User signup
-    path("login/", views.login_view, name="login"),        # User login
-    path("logout/", views.logout_view, name="logout"),     # User logout
-    path("password-reset/", views.password_reset, name="password_reset"),  # Reset password
-    path("password-change/", views.password_change, name="password_change"),  # Change password
-   path("profile/<str:username>/", views.profile, name="profile")
-]  
+    # Auth
+    path("register/", views.register_view, name="register"),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+
+    # Profile
+    path("profile/", views.profile_view, name="profile"),
+    path("edit-profile/", views.edit_profile_view, name="edit_profile"),
+
+    # Password
+    path("password-reset/", views.password_reset_view, name="password_reset"),
+    path("password-change/", views.password_change_view, name="password_change"),
+]
