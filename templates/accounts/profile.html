@@ -1,0 +1,85 @@
+{% extends "layout/layout.html" %}
+{% load tailwind_tags %}
+
+{% block title %}Profile - Chai HeadQ{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col items-center px-4 min-h-[calc(100vh-64px)]">
+
+  <!-- Back Button -->
+  <div class="w-full max-w-md mb-4">
+  {% include "components/back_button.html" %}
+</div>
+
+  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 w-full max-w-md">
+
+    <!-- Profile Header -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="w-24 h-24 rounded-full bg-yellow-400 flex items-center justify-center text-3xl font-bold text-white">
+        {{ profile_user.username|first|upper }}
+      </div>
+
+      <h2 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+        {{ profile_user.username }}
+      </h2>
+
+      {% if profile_user.email %}
+      <p class="text-sm text-gray-600 dark:text-gray-300">
+        {{ profile_user.email }}
+      </p>
+      {% endif %}
+    </div>
+
+    <!-- Profile Stats -->
+    <div class="flex justify-center mb-6 text-center">
+      <div>
+        <p class="font-bold text-gray-900 dark:text-white">
+          {{ user_tweets.count }}
+        </p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Chais</p>
+      </div>
+    </div>
+
+    <!-- Actions (Only for own profile) -->
+    {% if request.user == profile_user %}
+    <div class="mt-6 space-y-3">
+      <a
+        href="{% url 'accounts:edit_profile' %}"
+        class="block w-full text-center bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg transition"
+      >
+        Edit Profile
+      </a>
+
+      <a
+        href="{% url 'accounts:logout' %}"
+        class="block w-full text-center border border-red-400 text-red-400 hover:bg-red-400 hover:text-white font-semibold py-2 px-4 rounded-lg transition"
+      >
+        Logout
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- User Tweets -->
+  <div class="w-full max-w-md mt-6 space-y-4">
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Your Chais</h3>
+
+    {% if user_tweets %}
+      {% for tweet in user_tweets %}
+        {% include "tweet/tweet_card.html" with tweet=tweet %}
+      {% empty %}
+        <div class="text-center text-gray-500 dark:text-gray-400 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+          ☕ No chais yet! Post your first chai.
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-gray-500 dark:text-gray-400 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+        ☕ No chais yet! Post your first chai.
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
