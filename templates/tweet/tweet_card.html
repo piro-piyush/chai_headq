@@ -1,0 +1,83 @@
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border dark:border-gray-700 relative">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center gap-3">
+      <!-- Avatar -->
+      <div class="h-10 w-10 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-white">
+        {{ tweet.user.username|slice:":1"|upper }}
+      </div>
+
+      <div>
+        <p class="font-semibold text-gray-900 dark:text-white">
+          {{ tweet.user.username }}
+        </p>
+        <p class="text-xs text-gray-500">
+          {{ tweet.created_at|timesince }} ago
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Menu -->
+    {% if user == tweet.user %}
+    <div class="relative inline-block">
+  <!-- Action Button (Three Dots) -->
+  <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+          onclick="toggleActions('actions-{{ tweet.id }}')">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+      <circle cx="5" cy="12" r="2"/>
+      <circle cx="12" cy="12" r="2"/>
+      <circle cx="19" cy="12" r="2"/>
+    </svg>
+  </button>
+
+  <!-- Horizontal Action Menu -->
+  <div id="actions-{{ tweet.id }}" class="absolute top-0 right-10 flex gap-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-md p-1 z-10">
+    <a href="{% url 'tweet:edit' tweet.id %}" 
+       class="px-3 py-1 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+      Edit
+    </a>
+    <form method="POST" action="{% url 'tweet:delete' tweet.id %}" onsubmit="return confirm('Delete this Chai?');">
+      {% csrf_token %}
+      <button type="submit" 
+              class="px-3 py-1 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-500 transition">
+        Delete
+      </button>
+    </form>
+  </div>
+</div>
+    {% endif %}
+  </div>
+
+  <!-- Tweet Text -->
+  <p class="text-gray-800 dark:text-gray-200 mb-3">
+    {{ tweet.text }}
+  </p>
+
+  <!-- Tweet Image -->
+  {% if tweet.photo %}
+    <img 
+      src="{{ tweet.photo.url }}" 
+      alt="Tweet image"
+      class="rounded-lg mb-3 max-h-96 object-cover w-full"
+    >
+  {% endif %}
+
+</div>
+
+<script>
+ function toggleActions(id) {
+    const menu = document.getElementById(id);
+    menu.classList.toggle('hidden');
+  }
+
+  // Click outside to close
+  document.addEventListener('click', function(event) {
+    document.querySelectorAll('[id^="actions-"]').forEach(menu => {
+      const button = menu.previousElementSibling;
+      if (!menu.contains(event.target) && !button.contains(event.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+  });
+</script>
